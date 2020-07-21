@@ -1,0 +1,34 @@
+.box {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+  .container {
+    width: auto;
+    height: 100%;
+
+    .item {
+      float: left;
+      width: auto;
+      height: 100%;
+      box-shadow: -1px -1px 0 0 #fff, inset -1px -1px 0 0 #fff, inset 1px 1px 0 0 #fff;
+      background: blue;
+
+      &.active {
+        box-shadow: -1px -1px 0 0 #f00, inset -1px -1px 0 0 #f00, inset 1px 1px 0 0 #f00;
+      }
+    }
+  }
+
+  &.vertical {
+
+    .container {
+
+      .item {
+        float: none;
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+}

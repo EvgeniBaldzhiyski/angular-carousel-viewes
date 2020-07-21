@@ -1,0 +1,20 @@
+<div class="canvas" [class.no-anumation]="noAnimation" #carousel>
+  <div *ngFor="let item of items;" 
+    class="item"
+    [class.current]="_currentItem"
+    [class.maximize]="_maximizeItem"
+    [ngStyle]="_itemStyles?.get(item.data)"
+    (click)="setUpMain(item.data)"
+  >
+    <ng-container [ngTemplateOutlet]="item.tpl"></ng-container>
+  </div>
+
+  <div class="button-bar d-flex justify-content-center flex-column" [ngClass]="{vertical: isVertical, grid: isGrid}">
+    <button class="prev-page hand" (click)="prevPage()"> Prev
+      <i class="fas fa text-white" [ngClass]="{'fa-chevron-circle-left': true}"></i>
+    </button>
+    <button class="next-page hand" (click)="nextPage()">Next
+      <i class="fas fa text-white" [ngClass]="{'fa-chevron-circle-right': true}"></i>
+    </button>
+  </div>
+</div>

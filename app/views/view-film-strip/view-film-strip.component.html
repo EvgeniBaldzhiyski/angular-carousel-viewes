@@ -1,0 +1,37 @@
+<div class="box">
+  <ng-container *ngIf="!_maximizeItemId; else maximizeBox">
+    <div class="main-box">
+      <ng-container *ngFor="let item of items">
+        <ng-container *ngIf="item.data === _mainItemId">
+          <ng-container [ngTemplateOutlet]="item.tpl"></ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+    
+    <div class="caroucel-box">
+      <app-carousel #carousel
+        [itemsPerPage]="itemsPerPage"
+        [isVertical]="isVertical"
+        [freeFill]="freeFill"
+        class="carousel-container"
+        (resize)="onCarouselResize($event)">
+            
+        <ng-container *ngFor="let item of items">
+          <ng-container *ngIf="item.data !== _mainItemId">
+            <ng-container *appCarouselItem [ngTemplateOutlet]="item.tpl" (click)="test()"></ng-container>
+          </ng-container>
+        </ng-container>
+      </app-carousel>
+    </div>
+  </ng-container>
+
+  <ng-template #maximizeBox>
+    <div class="main-box mazimize-box">
+      <ng-container *ngFor="let item of items">
+        <ng-container *ngIf="item.data === _maximizeItemId">
+          <ng-container [ngTemplateOutlet]="item.tpl"></ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+  </ng-template>
+</div>

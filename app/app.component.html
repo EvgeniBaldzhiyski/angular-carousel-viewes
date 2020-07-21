@@ -1,0 +1,53 @@
+
+<!-- <div class="test-box" [ngStyle]="testBoxStyle"> -->
+  <!-- <app-carousel #carousel
+    [itemsPerPage]="perPage"
+    [isVertical]="vertical"
+    [freeFill]="false"
+    class="carousel-container"
+    (resize)="onCarouselResize($event)">
+        
+    <ng-container *ngFor="let item of items">
+      <div *appCarouselItem>test item {{ item }}</div>
+    </ng-container>
+  </app-carousel> -->
+
+  <!-- <app-view-film-strip #viewFilm
+    [itemsPerPage]="perPage"
+    [isVertical]="vertical"
+    [freeFill]="false"
+    [maximizeItemId]="maximize">
+    <ng-container *ngFor="let item of items">
+      <div *appCarouselItem="item">test item {{ item }}</div>
+    </ng-container>
+  </app-view-film-strip>
+</div> -->
+
+
+
+<!-- <button (click)="carousel.prevPage()">Prev</button>
+<button (click)="carousel.nextPage()">Next</button>
+<button (click)="carousel.goTo(3)">Goto</button>  -->
+
+<div class="test-box">
+  <app-advance-carousel
+    [maximizeItem]="fullSize"
+    [orientation]="orientation"
+    [slide]="2"
+
+    (resize)="onResize($event)"
+    (itemListChange)="oniIemListChange($event)"
+    (currentItemChange)="onCurrentItemChange($event)"
+    (maximizeItemChange)="onMaximizeItemChange($event)"
+    (slideChange)="onSlideChange($event)"
+    (orientationChange)="onOrientationChange($event)"
+    (maxItemsPerPageChange)="onMaxItemsPerPageChange($event)">
+    
+    <ng-container *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ,11, 12, 13, 14]">
+      <div class="carousel-items" *appCarouselItem="item">test item {{ item }}</div>
+    </ng-container>
+  </app-advance-carousel>
+</div>
+<button (click)="changeOrientaion(advancedCarouselView.GRID)">Grid</button>
+<button (click)="changeOrientaion(advancedCarouselView.FILM_HORIZONTAL)">Horizontal</button>
+<button (click)="changeOrientaion(advancedCarouselView.FILM_VERTICAL)">Vertical</button>

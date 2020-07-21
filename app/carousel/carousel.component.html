@@ -1,0 +1,7 @@
+<div class="box" [class.vertical]="isVertical" #carousel>
+  <div class="container" [ngStyle]="cntStyle" #scroller>
+    <div *ngFor="let item of items; let index = index;" class="item" [class.active]="activeItem === (index + 1)" [ngStyle]="itemStyle">
+      <ng-container [ngTemplateOutlet]="item.tpl"></ng-container>
+    </div>
+  </div>
+</div>

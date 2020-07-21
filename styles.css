@@ -1,0 +1,22 @@
+*{
+}
+
+a{
+  text-decoration: none;
+  color: green;
+}
+
+a:visited{
+  color: green
+}
+
+a.active{
+  color:red;
+}
+
+p{
+ width:400px;
+ height:450px;
+ overflow: scroll;
+ text-align: justify
+}
