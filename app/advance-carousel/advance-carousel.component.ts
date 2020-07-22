@@ -2,13 +2,12 @@ import {
   Component, OnChanges, OnDestroy, QueryList, ChangeDetectionStrategy,
   ContentChildren, ChangeDetectorRef, NgZone, SimpleChanges, ViewChild,
   ElementRef, Output, EventEmitter, Input
-} from "@angular/core";
-import { CarouselItemDirective } from "../carousel/carousel-item.directive";
-import { AnimationBuilder } from "@angular/animations";
-import { Subject, interval, Subscription, timer, animationFrameScheduler, BehaviorSubject } from 'rxjs';
+} from '@angular/core';
+import { interval, Subscription, timer, animationFrameScheduler } from 'rxjs';
+import { AdvancedCarouselItemDirective } from './advance-carousel-item.directive';
 
-export enum AdvancedCarouselView{
-  GRID,
+export enum AdvancedCarouselView {
+  GRID = 1,
   FILM_HORIZONTAL,
   FILM_VERTICAL,
 }
@@ -19,12 +18,12 @@ export enum AdvancedCarouselView{
   styleUrls: ['./advance-carousel.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
-  items:  QueryList<CarouselItemDirective>;
+export class AdvancedCarouselComponent implements OnChanges, OnDestroy {
+  items:  QueryList<AdvancedCarouselItemDirective>;
 
   noAnimation = false;
 
-  private _itemStyles: Map<string, any> = new Map();
+  _itemStyles: Map<string, any> = new Map();
 
   private _maxItemsPerPage = 5;
   private _maxSlides = 1;
@@ -33,13 +32,13 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
   _currentItem = '';
   _maximizeItem = '';
 
-  private _view: AdvancedCarouselView = AdvancedCarouselView.FILM_VERTICAL;
+  private _view: AdvancedCarouselView = AdvancedCarouselView.FILM_HORIZONTAL;
 
   private _resizeChecker = new Subscription();
 
   @ViewChild('carousel', { static: true }) private carousel: ElementRef;
-  
-  @ContentChildren(CarouselItemDirective) set _items(list: QueryList<CarouselItemDirective>) {
+
+  @ContentChildren(AdvancedCarouselItemDirective) set _items(list: QueryList<AdvancedCarouselItemDirective>) {
     this.items = list;
 
     console.log('CAROUSEL ITEMS', this.items.length);
@@ -59,8 +58,10 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
       );
     } else {
       this._resizeChecker.unsubscribe();
-    } 
+    }
   }
+
+  @Input() resizeCheckRate: number = 200;
 
   @Output() orientationChange: EventEmitter<AdvancedCarouselView> = new EventEmitter();
   @Input() set orientation(value: AdvancedCarouselView) {
@@ -99,6 +100,9 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
       this.cd.detectChanges();
     }
   }
+  get currentItem() {
+    return this._currentItem;
+  }
 
   @Output() maximizeItemChange: EventEmitter<string> = new EventEmitter();
   @Input() set maximizeItem(value: string) {
@@ -114,6 +118,9 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
       this.cd.detectChanges();
     }
   }
+  get maximizeItem() {
+    return this._maximizeItem;
+  }
 
   @Output() slideChange: EventEmitter<number> = new EventEmitter();
   @Input() set slide(value: number) {
@@ -122,7 +129,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
     }
 
     this.goTo(value);
-    
+
     if (this.items && this.items.length) {
       this.cd.detectChanges();
     }
@@ -140,7 +147,6 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
   }> = new EventEmitter();
 
   constructor(
-    private builder: AnimationBuilder,
     private cd: ChangeDetectorRef,
     private ngZone: NgZone,
   ) { }
@@ -233,7 +239,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
       lastDemotion = {width: carousel.clientWidth, height: carousel.clientHeight};
     }
 
-    this._resizeChecker = interval(500).subscribe(_ => {
+    this._resizeChecker = interval(this.resizeCheckRate).subscribe(_ => {
       if (this.carousel) {
         const _carousel = (this.carousel.nativeElement as HTMLElement);
 
@@ -246,11 +252,11 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
 
           lastDemotion = to;
           this.noAnimation = true;
-          
-          this.genDemotions()
+
+          this.genDemotions();
           this.cd.detectChanges();
 
-          timer(0, animationFrameScheduler).subscribe(_ => {
+          timer(0, animationFrameScheduler).subscribe(__ => {
             this.noAnimation = false;
             this.cd.detectChanges();
           });
@@ -271,7 +277,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
     }
 
     const carousel = (this.carousel.nativeElement as HTMLElement);
-    
+
     if (carousel) {
       this.setUpMain();
       this.orderItems();
@@ -291,25 +297,13 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
       id = this.items.first.data;
     }
 
-    let style: any = {
+    this._itemStyles.set(id, {
       width: `${carousel.clientWidth}px`,
       height: `${carousel.clientHeight}px`,
       'z-index': 3,
-    };
-
-    if (this.isVertical) {
-      style = { ...style,
-        rigth: '0',
-        top: '0'
-      };
-    } else {
-      style = { ...style,
-        left: '0',
-        bottom: '0'
-      };
-    }
-
-    this._itemStyles.set(id, style);
+      left: '0',
+      top: '0'
+    });
   }
 
   private calcMaxSlides(divide) {
@@ -339,7 +333,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
     return { width, height };
   }
 
-  private slideCalcExtraOffcet(sizeConst: number): number {
+  private slideCalcExtraOffset(sizeConst: number): number {
     const pageSize = (this._maxItemsPerPage - 1) * sizeConst;
     const realSize = (this.items.length - 1) * sizeConst;
     const estimateSize = pageSize * this._maxSlides;
@@ -351,7 +345,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
     const carousel = (this.carousel.nativeElement as HTMLElement);
 
     if (!carousel) {
-      return; 
+      return;
     }
 
     this.calcMaxSlides(this._maxItemsPerPage - 1);
@@ -360,25 +354,19 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
 
     let index = 0;
 
-    const pageSize = (this._maxItemsPerPage - 1) * itemSize.width;
-    const realSize = (this.items.length - 1) * itemSize.width;
-    const estimateSize = pageSize * this._maxSlides;
-
-    const extraOffcet = estimateSize - realSize;
-    
     let offset = carousel.clientWidth * (this._currentSlide - 1);
-    let extraOffset = this.slideCalcExtraOffcet(itemSize.width);
+    let extraOffset = this.slideCalcExtraOffset(itemSize.width);
     if (this.isVertical) {
       offset = carousel.clientHeight * (this._currentSlide - 1);
-      extraOffset = this.slideCalcExtraOffcet(itemSize.height);
+      extraOffset = this.slideCalcExtraOffset(itemSize.height);
     }
 
-    if (this._currentSlide === this._maxSlides) {
+    if (this._maxSlides > 1 && this._currentSlide === this._maxSlides) {
       offset -= extraOffset;
     }
 
     this.items.forEach(item => {
-      if (+this._maximizeItem === item.data) {
+      if (this._maximizeItem === item.data) {
         this.fullSizeOrder(item.data);
         return;
       }
@@ -388,37 +376,37 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
         height: `${itemSize.height}px`,
         'z-index': 0,
       };
-			
+
       if (this.isVertical) {
-        if(item.data === this._currentItem){
+        if (item.data === this._currentItem) {
           style = {
             width: `${carousel.clientWidth - itemSize.width}px`,
             height: `${carousel.clientHeight}px`,
             top: '0',
             left: '0',
             'z-index': 1,
-          }
+          };
         } else {
           style = { ...style,
             top: `${itemSize.height * index - offset}px`,
             left: `${carousel.clientWidth - itemSize.width}px`
-          }
+          };
           index++;
         }
       } else {
-        if(item.data === this._currentItem){
+        if (item.data === this._currentItem) {
           style = {
             width: `${carousel.clientWidth}px`,
             height: `${carousel.clientHeight - itemSize.height}px`,
             top: '0',
             left: '0',
             'z-index': 1,
-          }
+          };
         } else {
           style = { ...style,
             left: `${itemSize.width * index - offset}px`,
             top: `${carousel.clientHeight - itemSize.height}px`
-          }
+          };
           index++;
         }
      }
@@ -435,9 +423,9 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
     }
 
     if (this.items.length === 1) {
-			this.fullSizeOrder();
-		} else {
-      const {cols, rows} = this.calcGrixMatrix(4 / 3);
+      this.fullSizeOrder();
+    } else {
+      const { cols, rows } = this.calcGridMatrix(4 / 3);
 
       this.calcMaxSlides(rows * cols);
 
@@ -445,8 +433,6 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
         width: carousel.clientWidth / cols,
         height: carousel.clientHeight / rows
       };
-      
-      let index = 0;
 
       const maxRows = Math.ceil(this.items.length / cols);
       const extraRows = (this._maxSlides * rows) - maxRows;
@@ -454,7 +440,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
       const lastRowItems = this.items.length - ((maxRows - 1) * cols);
 
       let offset = carousel.clientHeight * (this._currentSlide - 1);
-      if (this._currentSlide === this._maxSlides) {
+      if (this._maxSlides > 1 && this._currentSlide === this._maxSlides) {
          offset -= extraRows * itemSize.height;
       }
 
@@ -493,18 +479,18 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
           };
         }
 
-        console.log({
-          id: item.data,
-          max: itemSize.height * rows,
-          maxS: this._maxSlides,
-          height: itemSize.height,
-        }, { tr, td, cols, rows});
+        // console.log({
+        //   id: item.data,
+        //   max: itemSize.height * rows,
+        //   maxS: this._maxSlides,
+        //   height: itemSize.height,
+        // }, { tr, td, cols, rows});
         this._itemStyles.set(item.data, style);
       });
-		}
+    }
   }
 
-  private calcGrixMatrix(ratio) {
+  private calcGridMatrix(ratio) {
     const carousel = (this.carousel.nativeElement as HTMLElement);
 
     if (!carousel) {
@@ -515,7 +501,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
     const numItems = this.items.length;
     const parentWidth = carousel.clientWidth;
     const parentHeight = carousel.clientHeight;
- 
+
     const visibleItems = Math.min(6, numItems);
     let _cols = 1;
     let _rows = 1;
@@ -552,7 +538,7 @@ export class AdvancedCarouselComponent implements OnChanges, OnDestroy{
   }
 
   private orderItems() {
-    if (this._view == AdvancedCarouselView.GRID || this.items.length < 4) {
+    if (this._view === AdvancedCarouselView.GRID || this.items.length < 4) {
       this.gridOrder();
     } else {
       this.slideOrder();

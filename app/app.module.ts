@@ -9,6 +9,7 @@ import { CarouselComponent } from './carousel/carousel.component';
 import { CarouselItemDirective } from './carousel/carousel-item.directive';
 import { ViewFilmStripComponent } from './views/view-film-strip/view-film-strip.component';
 import { AdvancedCarouselComponent } from './advance-carousel/advance-carousel.component';
+import { AdvancedCarouselItemDirective } from './advance-carousel/advance-carousel-item.directive';
 
 @NgModule({
   imports:      [ 
@@ -24,7 +25,8 @@ import { AdvancedCarouselComponent } from './advance-carousel/advance-carousel.c
 
     ViewFilmStripComponent,
 
-    AdvancedCarouselComponent
+    AdvancedCarouselComponent,
+    AdvancedCarouselItemDirective
   ],
   bootstrap:    [ AppComponent ]
 })

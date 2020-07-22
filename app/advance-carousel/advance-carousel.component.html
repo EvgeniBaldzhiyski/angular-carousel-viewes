@@ -1,4 +1,4 @@
-<div class="canvas" [class.no-anumation]="noAnimation" #carousel>
+<div class="canvas" [class.no-animation]="noAnimation" #carousel>
   <div *ngFor="let item of items;" 
     class="item"
     [class.current]="_currentItem"
@@ -9,11 +9,11 @@
     <ng-container [ngTemplateOutlet]="item.tpl"></ng-container>
   </div>
 
-  <div class="button-bar d-flex justify-content-center flex-column" [ngClass]="{vertical: isVertical, grid: isGrid}">
-    <button class="prev-page hand" (click)="prevPage()"> Prev
+  <div class="button-bar" [ngClass]="{vertical: isVertical, grid: isGrid}">
+    <button class="prev-page hand" (click)="prevPage()">
       <i class="fas fa text-white" [ngClass]="{'fa-chevron-circle-left': true}"></i>
     </button>
-    <button class="next-page hand" (click)="nextPage()">Next
+    <button class="next-page hand" (click)="nextPage()">
       <i class="fas fa text-white" [ngClass]="{'fa-chevron-circle-right': true}"></i>
     </button>
   </div>
